@@ -17,7 +17,7 @@ const Header = () => {
           <img
             src={HeaderImage}
             alt="Header Portait"
-            style={{ width: "288px", height: "352px" }}
+            style={{ width: "288px", height: "352px", objectFit: "contain" }}
           />
         </div>
         <h3 data-aos="fade-up">Joseph Osho</h3>
