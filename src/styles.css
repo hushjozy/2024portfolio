@@ -1759,21 +1759,66 @@
   .contact {
     position: relative;
     overflow: hidden;
-    padding: clamp(7rem, 16vw, 14rem) var(--g) 2rem;
+    padding: 0 var(--g) 2rem;
     text-align: center;
   }
 
-  .contact__orb {
+  /* Dusk: the page's ink deepens to violet, then burns down to an orange horizon.
+     isolation lets the rain sit between the sky and the content. */
+  .contact__scene {
+    position: relative;
+    isolation: isolate;
+    margin-inline: calc(var(--g) * -1);
+    padding: clamp(7rem, 16vw, 14rem) var(--g) clamp(6.5rem, 10vw, 9rem);
+    background: linear-gradient(
+      180deg,
+      var(--color-bg) 0%,
+      #120f17 14%,
+      #2e1a22 52%,
+      #7a3418 86%,
+      var(--color-ember) 100%
+    );
+  }
+
+  .contact__rain {
     position: absolute;
-    left: 50%;
-    top: 10%;
-    width: 70vw;
-    aspect-ratio: 1;
-    margin-left: -35vw;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(198, 113, 57, 0.35), rgba(179, 38, 30, 0.12) 45%, transparent 68%);
-    filter: blur(30px);
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
+  }
+
+  /* A slow ticker along the horizon, then dark ground for the footer. */
+  .contact__horizon {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    padding: 0.7rem 0;
+    background: rgba(20, 17, 15, 0.35);
+    color: var(--color-char);
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .contact__horizon-track {
+    display: flex;
+    width: max-content;
+    animation: horizon 40s linear infinite;
+  }
+
+  .contact__horizon-track span {
+    padding-right: 0.4em;
+  }
+
+  @keyframes horizon {
+    to { transform: translateX(-50%); }
   }
 
   .contact__title {

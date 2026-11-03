@@ -17,8 +17,9 @@ npm run preview   # serve the production build
 - `src/lib/motion.js` — Lenis + ScrollTrigger setup and the `data-*` scroll effects
   (`data-speed`, `data-parallax-img`, `data-split`, `data-read`, `data-rise`, `data-line`, `data-count`, `data-stamp`).
 - `src/fx/` — the Shinobi canvas effects (`<ShinobiFx kind="sphere | kaleidoscope | ripple | eye | shuriken" />`).
-  One canvas per screen: sphere in the hero and loader, shuriken on the gallery, kaleidoscope eye in Process
+  One canvas per screen: sphere in the loader, golden spheres as the O's of "Osho" under the hero, shuriken on the gallery, kaleidoscope eye in Process
   (scroll changes its pattern), ripple eye when the email is copied, searching eye on the 404 page.
+  `src/fx/rain.js` draws the rain over the contact section's dusk sky.
 - `404.html` + `src/notfound.jsx` — the not-found page, built as a second Vite entry.
 - `src/components/` — one component per section. In `Split` text, `*word*` sets the accent face and `~word~` brushes a word.
 - `src/styles.css` — Tailwind theme tokens (`@theme`) and bespoke component styles.

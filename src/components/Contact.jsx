@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { profile, socials } from "../data";
-import { gsap, scrollTo, ScrollTrigger } from "../lib/motion";
+import { gsap, getLenis, scrollTo, ScrollTrigger } from "../lib/motion";
 import ShinobiFx from "../fx/ShinobiFx";
+import { mountRain } from "../fx/rain";
 import Split from "./Split";
 
 // Button that leans toward the pointer.
@@ -67,28 +68,54 @@ const CopyEmail = () => {
   );
 };
 
+// Rain over the dusk sky. It quickens with scroll velocity and leans with the pointer.
+const Rain = () => {
+  const ref = useRef(null);
+  useEffect(() => {
+    const rain = mountRain(ref.current, {
+      speed: () => getLenis()?.velocity || 0,
+      interactTarget: ref.current.parentElement,
+    });
+    return rain.destroy;
+  }, []);
+  return <canvas ref={ref} className="contact__rain" aria-hidden="true" />;
+};
+
+const horizon = ["Research", "Design", "Prototype", "Build", "Ship", "Iterate"];
+
 const Contact = () => (
   <section className="contact" id="contact">
-    <div className="contact__orb" data-speed="0.5" aria-hidden="true" />
-    <span className="chapter__no">Chapter 06 · Let's talk</span>
-    <Split as="h2" className="contact__title" text="Let's make it *real.*" />
-    <p className="contact__note" data-rise>
-      Open to senior fullstack and AI-native engineering roles, contracts and the occasional
-      ambitious side project. Remote, hybrid or on-site in Lagos.
-    </p>
+    {/* Closing scene: rain at dusk over the headline, a slow ticker on the horizon. */}
+    <div className="contact__scene">
+      <Rain />
+      <span className="chapter__no">Chapter 06 · Let's talk</span>
+      <Split as="h2" className="contact__title" text="Let's make it *real.*" />
+      <p className="contact__note" data-rise>
+        Open to senior fullstack and AI-native engineering roles, contracts and the occasional
+        ambitious side project. Remote, hybrid or on-site in Lagos.
+      </p>
 
-    <div className="contact__actions" data-rise>
-      <Magnetic className="btn btn--accent btn--big" href={`mailto:${profile.email}`} data-cursor="Write">
-        Email me <span>→</span>
-      </Magnetic>
-      <Magnetic className="btn btn--ghost btn--big" href={profile.cv} target="_blank" rel="noreferrer">
-        See my CV <span>↗</span>
-      </Magnetic>
+      <div className="contact__actions" data-rise>
+        <Magnetic className="btn btn--accent btn--big" href={`mailto:${profile.email}`} data-cursor="Write">
+          Email me <span>→</span>
+        </Magnetic>
+        <Magnetic className="btn btn--ghost btn--big" href={profile.cv} target="_blank" rel="noreferrer">
+          See my CV <span>↗</span>
+        </Magnetic>
+      </div>
+
+      <CopyEmail />
+
+      <div className="contact__horizon" aria-hidden="true">
+        <div className="contact__horizon-track">
+          {[0, 1].map((k) => (
+            <span key={k}>{horizon.map((w) => `${w} · `).join("")}</span>
+          ))}
+        </div>
+      </div>
     </div>
 
-    <CopyEmail />
-
-    <footer className="relative mx-auto mt-24 max-w-[var(--max)] text-left md:mt-40">
+    <footer className="relative mx-auto mt-16 max-w-[var(--max)] text-left md:mt-24">
       <ul className="grid grid-cols-2 border-t border-line md:grid-cols-4">
         {socials.map((s) => (
           <li key={s.label}>
