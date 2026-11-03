@@ -14,5 +14,10 @@ export default defineConfig({
     }),
   ],
   // Keep CRA's output folder so the existing Render publish directory still works.
-  build: { outDir: "build", assetsInlineLimit: 0 },
+  // 404.html is a second entry: Render serves it for any path that doesn't exist.
+  build: {
+    outDir: "build",
+    assetsInlineLimit: 0,
+    rollupOptions: { input: { main: "index.html", notfound: "404.html" } },
+  },
 });

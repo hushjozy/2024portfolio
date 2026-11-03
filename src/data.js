@@ -62,8 +62,9 @@ export const work = [
     tags: ["Next.js", "Cosmos DB", "AKS", "Entra ID"],
     role: "Architect & lead",
     status: "Production",
+    stamp: ["Private", "NDA"],
     mark: "CA",
-    tone: "indigo",
+    tone: "umber",
   },
   {
     title: "ATS & Candidate Portal",
@@ -73,6 +74,7 @@ export const work = [
     tags: ["Azure OpenAI", "Voice Live", "D365 F&O"],
     role: "Fullstack, AI agents",
     status: "Delivered",
+    stamp: ["Shipped", "Group-wide"],
     mark: "AT",
     tone: "red",
   },
@@ -84,6 +86,7 @@ export const work = [
     tags: ["Next.js", "Workflows", "Analytics"],
     role: "Fullstack",
     status: "Delivered",
+    stamp: ["Shipped", "2026"],
     mark: "IV",
     tone: "ochre",
   },
@@ -95,10 +98,11 @@ export const work = [
     tags: ["React Native", ".NET", "iOS / Android"],
     role: "Lead engineer",
     status: "On the App Store",
+    stamp: ["Live", "App Store"],
     link: "https://apps.apple.com/us/app/lap-smartprocurement/id6762128563",
     image: lapProcurement,
     mark: "LP",
-    tone: "plum",
+    tone: "rust",
   },
   {
     title: "SmatVirtual",
@@ -108,6 +112,7 @@ export const work = [
     tags: ["React", "NestJS", "Socket.IO", "Redis", "Nx"],
     role: "Fullstack",
     status: "Live",
+    stamp: ["Live", "On the web"],
     link: "https://smatvirtual.com",
     image: smatvirtual,
     fit: "cover",
@@ -122,6 +127,7 @@ export const work = [
     tags: ["Node.js", "MongoDB", "Paystack", "FCM"],
     role: "Fullstack → Senior backend",
     status: "iOS & Android",
+    stamp: ["Live", "iOS · Android"],
     link: "https://play.google.com/store/apps/details?id=com.erranda.app&hl=en",
     image: errandaPhoto,
     fit: "cover",
@@ -136,11 +142,12 @@ export const work = [
     tags: ["React", "WebSockets", "Reusable UI"],
     role: "Senior frontend",
     status: "On the App Store",
+    stamp: ["Live", "App Store"],
     link: "https://apps.apple.com/us/app/rentt/id6478425826",
     image: rentt,
     fit: "cover",
     mark: "Rt",
-    tone: "indigo",
+    tone: "umber",
   },
   {
     title: "Stars Among Us",
@@ -150,10 +157,11 @@ export const work = [
     tags: ["React", ".NET", "Mobile"],
     role: "Lead engineer",
     status: "Live",
+    stamp: ["Live", "On the web"],
     link: "https://sau.lapapps.ng",
     image: lafargeSuite,
     mark: "SA",
-    tone: "plum",
+    tone: "rust",
   },
 ];
 
@@ -301,12 +309,8 @@ export const stack = [
   { group: "AI & tooling", items: ["Azure OpenAI", "Voice Live", "Claude Code", "Nx monorepo", "CI/CD", "Jira", "App publishing"] },
 ];
 
-export const marquee = [
-  "AI native",
-  "Fullstack",
-  "Real-time systems",
-  "Microservices",
-  "Mobile",
-  "Azure",
-  "Since 2018",
-];
+// Two bands under the hero: what I build, then what I build it with.
+export const marquee = {
+  dark: ["Enterprise AI", "Real-time", "Mobile", "Microservices", "Lagos · GMT+1", "Since 2018"],
+  orange: ["React", "Next.js", "NestJS", "ASP.NET Core", "Azure", "AI agents"],
+};

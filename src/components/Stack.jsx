@@ -14,7 +14,7 @@ const Stack = () => (
           <ul>
             {g.items.map((item) => (
               <li key={item} className="group text-[clamp(1.25rem,2vw,1.7rem)] leading-[1.5] tracking-[-0.03em]">
-                <span className="inline-block transition duration-500 ease-expo group-hover:translate-x-2.5 group-hover:font-serif group-hover:italic group-hover:text-ochre">
+                <span className="inline-block transition duration-500 ease-expo group-hover:translate-x-2.5 group-hover:font-serif group-hover:text-ochre">
                   {item}
                 </span>
               </li>

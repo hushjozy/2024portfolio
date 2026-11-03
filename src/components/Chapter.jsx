@@ -11,7 +11,7 @@ const Chapter = ({ no, title, aside }) => (
     </div>
     <Split
       as="h2"
-      className="font-serif text-[clamp(3.4rem,11vw,10rem)] font-normal leading-[0.92] tracking-[-0.03em]"
+      className="font-serif text-[clamp(3rem,9.5vw,8.5rem)] font-normal leading-[0.95] tracking-[-0.01em]"
       text={title}
     />
   </header>

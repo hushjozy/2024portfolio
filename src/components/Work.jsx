@@ -3,6 +3,7 @@ import { gallery, sites, work } from "../data";
 import { gsap } from "../lib/motion";
 import Chapter from "./Chapter";
 import Picture from "./Picture";
+import ShinobiFx from "../fx/ShinobiFx";
 import Split from "./Split";
 
 // Projects without screenshots get a generated cover in the site palette.
@@ -37,6 +38,11 @@ const Project = ({ item, index }) => {
             </div>
           )}
         </div>
+        {item.stamp && (
+          <div className="project__stamp stamp" data-stamp aria-hidden="true">
+            {item.stamp[0]}<small>{item.stamp[1]}</small>
+          </div>
+        )}
       </Tag>
 
       <div className="project__info">
@@ -51,8 +57,8 @@ const Project = ({ item, index }) => {
           {item.tags.map((t) => <li key={t}>{t}</li>)}
         </ul>
         {item.link && (
-          <a className="link-arrow" href={item.link} target="_blank" rel="noreferrer">
-            View project <span>↗</span>
+          <a className="star-link project__link" href={item.link} target="_blank" rel="noreferrer">
+            <i className="star" aria-hidden="true" /><span>View project</span>
           </a>
         )}
       </div>
@@ -118,7 +124,8 @@ const Gallery = () => {
     <div className="gallery" ref={ref}>
       <div className="gallery__track">
         <div className="gallery__intro">
-          <span className="eyebrow">Also shipped</span>
+          <ShinobiFx kind="shuriken" className="gallery__fx" label="Molten spiral shuriken" data-cursor="Erupt" />
+          <span className="eyebrow">Also shipped · Things that run hot</span>
           <Split as="h3" className="gallery__title" text="Apps, sites & *side quests.*" />
           <p>Drag your scroll sideways through earlier mobile and web work.</p>
         </div>

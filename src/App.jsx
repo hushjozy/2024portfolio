@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import Loader from "./components/Loader";
+import Loader, { introSeen } from "./components/Loader";
 import Cursor from "./components/Cursor";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
@@ -14,8 +14,9 @@ import { initScrollEffects, initSmoothScroll, lockScroll, reducedMotion, ScrollT
 
 const App = () => {
   const mainRef = useRef(null);
-  const [loading, setLoading] = useState(() => !reducedMotion());
-  const [ready, setReady] = useState(() => reducedMotion());
+  // The intro plays once per session and never for reduced motion.
+  const [loading, setLoading] = useState(() => !reducedMotion() && !introSeen());
+  const [ready, setReady] = useState(() => !loading);
 
   useEffect(() => {
     if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual";

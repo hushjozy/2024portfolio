@@ -128,6 +128,16 @@ export const initScrollEffects = (scope) => {
       });
     });
 
+    // Ink stamps press down once, when their card is about 40% in view.
+    q("[data-stamp]").forEach((el) => {
+      ScrollTrigger.create({
+        trigger: el.parentElement,
+        start: "top 60%",
+        once: true,
+        onEnter: () => el.classList.add("is-in"),
+      });
+    });
+
     // Counters.
     q("[data-count]").forEach((el) => {
       const end = parseFloat(el.dataset.count);

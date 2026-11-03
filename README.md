@@ -15,9 +15,14 @@ npm run preview   # serve the production build
 
 - `src/data.js` — all content (projects, experience, stack, links). Edit this to update the site.
 - `src/lib/motion.js` — Lenis + ScrollTrigger setup and the `data-*` scroll effects
-  (`data-speed`, `data-parallax-img`, `data-split`, `data-read`, `data-rise`, `data-line`, `data-count`).
-- `src/components/` — one component per section.
+  (`data-speed`, `data-parallax-img`, `data-split`, `data-read`, `data-rise`, `data-line`, `data-count`, `data-stamp`).
+- `src/fx/` — the Shinobi canvas effects (`<ShinobiFx kind="sphere | kaleidoscope | ripple | eye | shuriken" />`).
+  One canvas per screen: sphere in the hero and loader, shuriken on the gallery, kaleidoscope eye in Process
+  (scroll changes its pattern), ripple eye when the email is copied, searching eye on the 404 page.
+- `404.html` + `src/notfound.jsx` — the not-found page, built as a second Vite entry.
+- `src/components/` — one component per section. In `Split` text, `*word*` sets the accent face and `~word~` brushes a word.
 - `src/styles.css` — Tailwind theme tokens (`@theme`) and bespoke component styles.
 - `public/Joseph-Osho-Resume-2026.pdf` — the CV linked across the site.
 
-Motion respects `prefers-reduced-motion`: smooth scroll, the loader and scrubbed effects are skipped.
+Motion respects `prefers-reduced-motion`: smooth scroll, the loader and scrubbed effects are skipped, and canvases render a single still frame.
+The loader plays once per browser session, is capped at 2s and can be skipped.

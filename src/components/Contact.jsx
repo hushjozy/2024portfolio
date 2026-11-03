@@ -1,6 +1,7 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { profile, socials } from "../data";
-import { gsap, scrollTo } from "../lib/motion";
+import { gsap, scrollTo, ScrollTrigger } from "../lib/motion";
+import ShinobiFx from "../fx/ShinobiFx";
 import Split from "./Split";
 
 // Button that leans toward the pointer.
@@ -23,6 +24,49 @@ const Magnetic = ({ children, className, ...rest }) => {
   );
 };
 
+// Copying the address is the site's "send": on success the ripple eye opens and fires one
+// shockwave as a receipt. It never plays when the copy fails.
+const CopyEmail = () => {
+  const ripple = useRef(null);
+  const [state, setState] = useState({ status: "idle", n: 0 });
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(profile.email);
+      setState((s) => ({ status: "copied", n: s.n + 1 }));
+    } catch {
+      setState((s) => ({ status: "failed", n: s.n }));
+    }
+  };
+
+  // Runs after the eye has mounted, so the first shockwave isn't lost.
+  useEffect(() => {
+    if (state.status !== "copied") return;
+    ripple.current?.trigger();
+    if (state.n === 1) ScrollTrigger.refresh();
+  }, [state]);
+
+  return (
+    <div className="contact__mail">
+      <div className="contact__mail-row">
+        <a className="contact__email" href={`mailto:${profile.email}`}>{profile.email}</a>
+        <button className="contact__copy" onClick={copy}>
+          <i className="star" aria-hidden="true" /> {state.status === "copied" ? "Copy again" : "Copy"}
+        </button>
+      </div>
+      {state.status === "copied" && (
+        <div className="contact__receipt">
+          <ShinobiFx ref={ripple} kind="ripple" clickable={false} label="Ripple eye: email copied" />
+        </div>
+      )}
+      <p className="contact__status" aria-live="polite">
+        {state.status === "copied" && "Copied. Paste it into any mail app."}
+        {state.status === "failed" && "Couldn't reach your clipboard. The address is right above."}
+      </p>
+    </div>
+  );
+};
+
 const Contact = () => (
   <section className="contact" id="contact">
     <div className="contact__orb" data-speed="0.5" aria-hidden="true" />
@@ -42,7 +86,7 @@ const Contact = () => (
       </Magnetic>
     </div>
 
-    <a className="contact__email" href={`mailto:${profile.email}`}>{profile.email}</a>
+    <CopyEmail />
 
     <footer className="relative mx-auto mt-24 max-w-[var(--max)] text-left md:mt-40">
       <ul className="grid grid-cols-2 border-t border-line md:grid-cols-4">
@@ -52,7 +96,7 @@ const Contact = () => (
               href={s.href}
               target="_blank"
               rel="noreferrer"
-              className="block py-6 font-serif text-[clamp(1.4rem,2.6vw,2.2rem)] transition duration-500 ease-expo hover:translate-x-2 hover:italic hover:text-ochre"
+              className="block py-6 font-serif text-[clamp(1.4rem,2.6vw,2.2rem)] transition duration-500 ease-expo hover:translate-x-2 hover:text-ochre"
             >
               {s.label}
             </a>
@@ -63,7 +107,9 @@ const Contact = () => (
         <span>© {new Date().getFullYear()} Joseph Osho · Lagos, Nigeria</span>
         <span className="hidden gap-5 sm:flex">
           {["AI native", "Ship → test → ship", "Prompt loaded"].map((t) => (
-            <span key={t} className="before:text-ember before:content-['✺_']">{t}</span>
+            <span key={t} className="inline-flex items-center gap-2">
+              <i className="star text-ember" aria-hidden="true" />{t}
+            </span>
           ))}
         </span>
         <button className="uppercase text-ink hover:text-ochre" onClick={() => scrollTo(0)}>
