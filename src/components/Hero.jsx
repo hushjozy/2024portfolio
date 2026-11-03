@@ -20,9 +20,9 @@ const RasenganLetter = forwardRef(function RasenganLetter({ letter, tint, label,
 
 const Hero = ({ ready }) => {
   const ref = useRef(null);
-  const blue = useRef(null);
-  const gold = useRef(null);
-  const orbs = (fn) => [blue, gold].forEach((o) => o.current && fn(o.current));
+  const big = useRef(null);
+  const small = useRef(null);
+  const orbs = (fn) => [big, small].forEach((o) => o.current && fn(o.current));
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -121,9 +121,9 @@ const Hero = ({ ready }) => {
       <div className="hero__name" aria-hidden="true">
         <span className="w"><span className="w__i">Joseph</span></span>
         <span className="hero__osho">
-          <RasenganLetter ref={blue} letter="O" label="Rasengan" />
+          <RasenganLetter ref={big} letter="O" tint="gold" label="Golden rasengan" />
           <span className="w"><span className="w__i em">sh</span></span>
-          <RasenganLetter ref={gold} letter="o" tint="gold" className="is-lower" label="Golden rasengan" />
+          <RasenganLetter ref={small} letter="o" tint="gold" className="is-lower" label="Golden rasengan" />
         </span>
       </div>
     </section>

@@ -862,7 +862,7 @@
     align-items: baseline;
   }
 
-  /* Both O's of Osho are rasengans (blue capital, gold lowercase). The letters stay, invisible,
+  /* Both O's of Osho are golden rasengans. The letters stay, invisible,
      so spacing and baseline are exact; each canvas is centred on its letter and sized to it. */
   .hero__o {
     position: relative;
