@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://oshojoseph.onrender.com/sitemap.xml
+Sitemap: https://josephosho.onrender.com/sitemap.xml
