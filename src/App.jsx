@@ -1,69 +1,66 @@
-import Navbar from "./sections/navbar/Navbar";
-import Header from "./sections/header/Header";
-import About from "./sections/about/About";
-import Services from "./sections/services/Services";
-import Portfolio from "./sections/portfolio/Portfolio";
-import Contact from "./sections/contact/Contact";
-import Footer from "./sections/footer/Footer";
-import FloatingNav from "./sections/floating-nav/FloatingNav";
-import Theme from "./theme/Theme";
-import { useThemeContext } from "./context/theme-context";
-import { useRef, useState, useEffect } from "react";
-import Skills from "./sections/Skills/Skills";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import Loader from "./components/Loader";
+import Cursor from "./components/Cursor";
+import Nav from "./components/Nav";
+import Hero from "./components/Hero";
+import Marquee from "./components/Marquee";
+import About from "./components/About";
+import Work from "./components/Work";
+import Experience from "./components/Experience";
+import Process from "./components/Process";
+import Stack from "./components/Stack";
+import Contact from "./components/Contact";
+import { initScrollEffects, initSmoothScroll, lockScroll, reducedMotion, ScrollTrigger } from "./lib/motion";
 
 const App = () => {
-  const { themeState } = useThemeContext();
-
-  const mainRef = useRef();
-  const [showFloatingNav, setShowFloatingNav] = useState(true);
-  const [siteYPostion, setSiteYPosition] = useState(0);
-
-  const showFloatingNavHandler = () => {
-    setShowFloatingNav(true);
-  };
-
-  const hideFloatingNavHandler = () => {
-    setShowFloatingNav(false);
-  };
-
-  // check if floating nav should be shown or hidden
-  const floatingNavToggleHandler = () => {
-    // check if we scrolled up or down at least 20px
-    if (
-      siteYPostion < mainRef?.current?.getBoundingClientRect().y - 20 ||
-      siteYPostion > mainRef?.current?.getBoundingClientRect().y + 20
-    ) {
-      showFloatingNavHandler();
-    } else {
-      hideFloatingNavHandler();
-    }
-
-    setSiteYPosition(mainRef?.current?.getBoundingClientRect().y);
-  };
+  const mainRef = useRef(null);
+  const [loading, setLoading] = useState(() => !reducedMotion());
+  const [ready, setReady] = useState(() => reducedMotion());
 
   useEffect(() => {
-    const checkYPosition = setInterval(floatingNavToggleHandler, 2000);
+    if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+    return initSmoothScroll();
+  }, []);
 
-    // cleanup function
-    return () => clearInterval(checkYPosition); // eslint-disable-next-line
-  }, [siteYPostion]);
+  useEffect(() => {
+    lockScroll(loading);
+  }, [loading]);
+
+  useLayoutEffect(() => {
+    const mm = initScrollEffects(mainRef.current);
+    // Images and fonts change layout after mount; re-measure once they settle.
+    const refresh = () => ScrollTrigger.refresh();
+    window.addEventListener("load", refresh);
+    document.fonts?.ready.then(refresh);
+    return () => {
+      window.removeEventListener("load", refresh);
+      mm.revert();
+    };
+  }, []);
+
+  const done = useCallback(() => {
+    setLoading(false);
+    setReady(true);
+  }, []);
 
   return (
-    <main
-      className={`${themeState.primary} ${themeState.background}`}
-      ref={mainRef}
-    >
-      <Navbar />
-      <Header />
-      <About />
-      <Services />
-      <Portfolio />
-      <Skills />
-      <Contact />
-      <Footer />
-      <Theme />
-      {showFloatingNav && <FloatingNav />}
-    </main>
+    <>
+      {loading && <Loader onDone={done} />}
+      <Cursor />
+      <div className="grain" aria-hidden="true" />
+      <Nav />
+      <main ref={mainRef}>
+        <Hero ready={ready} />
+        <Marquee />
+        <About />
+        <Work />
+        <Experience />
+        <Process />
+        <Stack />
+        <Contact />
+      </main>
+    </>
   );
 };
 
