@@ -5,17 +5,18 @@ import { mountFx } from "./shinobi-fx";
 // kinds: eye | kaleidoscope | ripple | sphere | shuriken
 // ref API: trigger(), setPattern(n) (kaleidoscope), setCharged(bool) (sphere)
 // interactTarget: element that feeds the pointer (defaults to the canvas itself).
+// tint: sphere colour, "blue" (default) or "gold".
 const ShinobiFx = forwardRef(function ShinobiFx(
-  { kind = "sphere", clickable = true, interactTarget, label, className = "", ...rest },
+  { kind = "sphere", tint, clickable = true, interactTarget, label, className = "", ...rest },
   ref
 ) {
   const canvas = useRef(null);
   const fx = useRef(null);
 
   useEffect(() => {
-    fx.current = mountFx(canvas.current, kind, { clickable, interactTarget });
+    fx.current = mountFx(canvas.current, kind, { tint, clickable, interactTarget });
     return () => fx.current.destroy();
-  }, [kind, clickable, interactTarget]);
+  }, [kind, tint, clickable, interactTarget]);
 
   useImperativeHandle(ref, () => ({
     trigger: () => fx.current?.trigger(),

@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { forwardRef, useLayoutEffect, useRef, useState } from "react";
 import hero from "../media/hero.jpg?w=420;840;1100&format=avif;webp;jpg&as=picture";
 import Picture from "./Picture";
 import ShinobiFx from "../fx/ShinobiFx";
@@ -6,9 +6,23 @@ import { profile } from "../data";
 import { gsap, scrollTo } from "../lib/motion";
 import Split from "./Split";
 
+// A letter replaced by a rasengan. The letter stays (transparent) so width and baseline are exact,
+// and the slot rather than the larger canvas takes the pointer: hover charges, click boosts.
+const RasenganLetter = forwardRef(function RasenganLetter({ letter, tint, label, className = "" }, ref) {
+  const [slot, setSlot] = useState(null);
+  return (
+    <span className={`hero__o ${className}`} ref={setSlot} data-cursor="Boost">
+      {letter}
+      <ShinobiFx ref={ref} kind="sphere" tint={tint} className="hero__o-fx" interactTarget={slot ?? undefined} label={label} />
+    </span>
+  );
+});
+
 const Hero = ({ ready }) => {
   const ref = useRef(null);
-  const core = useRef(null);
+  const blue = useRef(null);
+  const gold = useRef(null);
+  const orbs = (fn) => [blue, gold].forEach((o) => o.current && fn(o.current));
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -16,16 +30,29 @@ const Hero = ({ ready }) => {
       gsap.set(".hero__frame", { clipPath: "inset(100% 0 0 0)" });
       gsap.set(".hero__fade", { opacity: 0, y: 24 });
       // Fade and rise only: scaling a canvas would make it re-measure every frame.
-      gsap.set(".hero__core", { opacity: 0, y: 40 });
+      gsap.set(".hero__o-fx", { opacity: 0, y: 40 });
 
-      // Scroll-out: the portrait sinks, the name slides, the headline lifts and the core drifts up.
+      // Scroll-out: the portrait sinks, the name slides and the headline lifts.
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         const st = { trigger: ref.current, start: "top top", end: "bottom top", scrub: true };
         gsap.to(".hero__frame img", { yPercent: 18, scale: 1.15, ease: "none", scrollTrigger: st });
         gsap.to(".hero__title", { yPercent: -40, opacity: 0.2, ease: "none", scrollTrigger: st });
-        gsap.to(".hero__name", { xPercent: -14, ease: "none", scrollTrigger: st });
-        gsap.to(".hero__core-wrap", { yPercent: -70, ease: "none", scrollTrigger: st });
+        // The rasengans ride the sliding name and charges while the page is moving.
+        let settle;
+        gsap.to(".hero__name", {
+          xPercent: -14,
+          ease: "none",
+          scrollTrigger: {
+            ...st,
+            onUpdate: (self) => {
+              if (Math.abs(self.getVelocity()) < 400) return;
+              orbs((o) => o.setCharged(true));
+              clearTimeout(settle);
+              settle = setTimeout(() => orbs((o) => o.setCharged(false)), 220);
+            },
+          },
+        });
         gsap.to(".hero__blob", { yPercent: 60, ease: "none", scrollTrigger: st });
       });
     }, ref);
@@ -42,13 +69,13 @@ const Hero = ({ ready }) => {
         // The brush lands on the verb once the headline has settled.
         .call(() => ref.current.querySelector(".brush")?.classList.add("is-in"), null, "-=0.5")
         .to(".hero__name .w__i", { yPercent: 0, duration: 1.4, stagger: 0.1 }, "-=1")
-        .to(".hero__core", { opacity: 1, y: 0, duration: 1.4, onStart: () => core.current?.trigger() }, "-=1.2")
+        .to(".hero__o-fx", { opacity: 1, y: 0, duration: 1.4, stagger: 0.25, onStart: () => orbs((o) => o.trigger()) }, "-=1.3")
         .to(".hero__fade", { opacity: 1, y: 0, duration: 1, stagger: 0.08 }, "-=1.1");
     }, ref);
     return () => ctx.kill();
   }, [ready]);
 
-  const charge = (on) => () => core.current?.setCharged(on);
+  const charge = (on) => () => orbs((o) => o.setCharged(on));
 
   return (
     <section className="hero" id="top" ref={ref}>
@@ -67,10 +94,6 @@ const Hero = ({ ready }) => {
           <figure className="hero__frame" data-cursor="Hi!">
             <Picture src={hero} alt="Portrait of Joseph Osho" sizes="(max-width: 899px) min(92vw, 420px), 420px" priority />
           </figure>
-          {/* The agent core: idles beside the portrait, charges while the CTA is hovered. */}
-          <div className="hero__core-wrap">
-            <ShinobiFx ref={core} kind="sphere" className="hero__core" label="Agent core: a spinning energy sphere" data-cursor="Boost" />
-          </div>
           <a
             href="#contact"
             className="hero__cta hero__fade"
@@ -97,7 +120,11 @@ const Hero = ({ ready }) => {
 
       <div className="hero__name" aria-hidden="true">
         <span className="w"><span className="w__i">Joseph</span></span>
-        <span className="w"><span className="w__i em">Osho</span></span>
+        <span className="hero__osho">
+          <RasenganLetter ref={blue} letter="O" label="Rasengan" />
+          <span className="w"><span className="w__i em">sh</span></span>
+          <RasenganLetter ref={gold} letter="o" tint="gold" className="is-lower" label="Golden rasengan" />
+        </span>
       </div>
     </section>
   );

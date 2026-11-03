@@ -3,12 +3,17 @@
 // Usage: const fx = mountFx(canvasEl, 'sphere'); … fx.trigger(); fx.setPattern(2); fx.destroy();
 const W = 520, H = 380;
 const KEYS = { eye: 'a', kaleidoscope: 'b', ripple: 'c', sphere: 'd', shuriken: 'e' };
+// Sphere palettes (RGB triplets): the board's blue, and a gold variant.
+const SPHERE_TINTS = {
+  blue: { glow: ['90,170,255', '60,120,255', '40,80,255'], floor: '110,180,255', shell: ['170,220,255', '90,160,255', '160,210,255'], strand: ['120,190,255', '230,246,255'], core: ['225,245,255', '120,190,255', '80,150,255'], spark: '200,235,255' },
+  gold: { glow: ['255,190,70', '240,140,40', '220,110,20'], floor: '255,190,90', shell: ['255,226,160', '255,176,70', '255,214,140'], strand: ['255,190,70', '255,244,212'], core: ['255,244,206', '255,192,80', '236,140,40'], spark: '255,228,170' },
+};
 // Touch screens draw at 1x; fine pointers get up to 1.5x.
 const dpr = () => Math.min(window.matchMedia('(pointer: coarse)').matches ? 1 : 1.5, window.devicePixelRatio || 1);
 
 class Engine {
   constructor(canvas, kind, opts = {}) {
-    this.c = canvas; this.k = KEYS[kind];
+    this.c = canvas; this.k = KEYS[kind]; this.tint = SPHERE_TINTS[opts.tint] || SPHERE_TINTS.blue;
     if (!this.k) throw new Error('shinobi-fx: unknown kind "' + kind + '"');
     this.s = { mx: 0, my: 0, lx: 0, ly: 0, hover: 0, boost: 0, rot: 0, T: 0, pat: 0, prev: -1, mt: 1, blink: 0, nb: 1.5 + Math.random() * 3, charge: 0, waves: [], parts: [], bub: [], rings: [], drops: [] };
     this.reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -158,22 +163,23 @@ class Engine {
     const T = s.T, cx = 260, cy = 186 + Math.sin(ts * 1.3) * 5, S = 76 + s.charge * 14 + Math.sin(ts * 7) * 1.2;
     x.clearRect(0, 0, W, H);
     x.globalCompositeOperation = 'lighter';
-    const gl = this.layer('sglow', 520, 520, l => { const g = l.createRadialGradient(260, 260, 15, 260, 260, 240); g.addColorStop(0, 'rgba(90,170,255,.42)'); g.addColorStop(.4, 'rgba(60,120,255,.14)'); g.addColorStop(1, 'rgba(40,80,255,0)'); l.fillStyle = g; l.fillRect(0, 0, 520, 520); });
+    const C = this.tint;
+    const gl = this.layer('sglow', 520, 520, l => { const g = l.createRadialGradient(260, 260, 15, 260, 260, 240); g.addColorStop(0, `rgba(${C.glow[0]},.42)`); g.addColorStop(.4, `rgba(${C.glow[1]},.14)`); g.addColorStop(1, `rgba(${C.glow[2]},0)`); l.fillStyle = g; l.fillRect(0, 0, 520, 520); });
     const gs = S / 85; x.drawImage(gl, cx - 260 * gs, cy - 260 * gs, 520 * gs, 520 * gs); let g;
-    x.save(); x.translate(cx, 342); x.scale(1, .16); g = x.createRadialGradient(0, 0, 0, 0, 0, 170); g.addColorStop(0, `rgba(110,180,255,${.35 + s.charge * .2})`); g.addColorStop(1, 'rgba(110,180,255,0)'); x.fillStyle = g; x.beginPath(); x.arc(0, 0, 170, 0, P); x.fill(); x.restore();
-    g = x.createRadialGradient(cx, cy, 0, cx, cy, S * 1.05); g.addColorStop(0, 'rgba(170,220,255,.18)'); g.addColorStop(.85, 'rgba(90,160,255,.16)'); g.addColorStop(.97, 'rgba(160,210,255,.22)'); g.addColorStop(1, 'rgba(160,210,255,0)'); x.fillStyle = g; x.beginPath(); x.arc(cx, cy, S * 1.05, 0, P); x.fill();
+    x.save(); x.translate(cx, 342); x.scale(1, .16); g = x.createRadialGradient(0, 0, 0, 0, 0, 170); g.addColorStop(0, `rgba(${C.floor},${.35 + s.charge * .2})`); g.addColorStop(1, `rgba(${C.floor},0)`); x.fillStyle = g; x.beginPath(); x.arc(0, 0, 170, 0, P); x.fill(); x.restore();
+    g = x.createRadialGradient(cx, cy, 0, cx, cy, S * 1.05); g.addColorStop(0, `rgba(${C.shell[0]},.18)`); g.addColorStop(.85, `rgba(${C.shell[1]},.16)`); g.addColorStop(.97, `rgba(${C.shell[2]},.22)`); g.addColorStop(1, `rgba(${C.shell[2]},0)`); x.fillStyle = g; x.beginPath(); x.arc(cx, cy, S * 1.05, 0, P); x.fill();
     x.lineCap = 'round'; const b = s.buf;
     for (const q of s.st) {
       for (let i = 0; i <= N; i++) { const th = q.ph + T * q.sp - (i / N) * q.len, px = Math.cos(th) * q.r * S, py = Math.sin(th) * q.r * S, y2 = py * q.cx; b[i * 3] = cx + px * q.cz - y2 * q.sz; b[i * 3 + 1] = cy + px * q.sz + y2 * q.cz; b[i * 3 + 2] = Math.sin(th) * q.sx; }
-      const depth = .35 + .65 * (b[2] + 1) / 2, col = q.blue ? '120,190,255' : '230,246,255';
+      const depth = .35 + .65 * (b[2] + 1) / 2, col = C.strand[q.blue ? 0 : 1];
       for (let seg = 0; seg < 2; seg++) { const i0 = seg ? 6 : 0, i1 = seg ? N : 6; x.beginPath(); x.moveTo(b[i0 * 3], b[i0 * 3 + 1]); for (let i = i0 + 1; i <= i1; i++) x.lineTo(b[i * 3], b[i * 3 + 1]); x.lineWidth = q.w * (1 - seg * .4) * (.6 + depth * .6); x.strokeStyle = `rgba(${col},${depth * (seg ? .32 : .9)})`; x.stroke(); }
     }
     const br = 1 + Math.sin(ts * 9) * .04;
-    g = x.createRadialGradient(cx, cy, 0, cx, cy, S * .75 * br); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.3, 'rgba(225,245,255,.95)'); g.addColorStop(.65, 'rgba(120,190,255,.35)'); g.addColorStop(1, 'rgba(80,150,255,0)'); x.fillStyle = g; x.beginPath(); x.arc(cx, cy, S * .75 * br, 0, P); x.fill();
+    g = x.createRadialGradient(cx, cy, 0, cx, cy, S * .75 * br); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.3, `rgba(${C.core[0]},.95)`); g.addColorStop(.65, `rgba(${C.core[1]},.35)`); g.addColorStop(1, `rgba(${C.core[2]},0)`); x.fillStyle = g; x.beginPath(); x.arc(cx, cy, S * .75 * br, 0, P); x.fill();
     x.lineWidth = 3; x.strokeStyle = 'rgba(255,255,255,.55)';
     for (let i = 0; i < 6; i++) { const a = T * 9 + i * 1.047, rr = S * (.18 + (i % 3) * .07); x.beginPath(); x.arc(cx, cy, rr, a, a + 1.5); x.stroke(); }
     if (Math.random() < dt * (8 + s.charge * 40)) s.parts.push({ a: Math.random() * P, d: S * (1.4 + Math.random() * .8), w: 2 + Math.random() * 2, life: 1 });
-    for (const p of s.parts) { p.a += p.w * dt * (1 + s.charge); p.d -= dt * 70; p.life -= dt * .9; x.fillStyle = `rgba(200,235,255,${Math.max(0, p.life) * .9})`; x.beginPath(); x.arc(cx + Math.cos(p.a) * p.d, cy + Math.sin(p.a) * p.d * .55, 1.6, 0, P); x.fill(); }
+    for (const p of s.parts) { p.a += p.w * dt * (1 + s.charge); p.d -= dt * 70; p.life -= dt * .9; x.fillStyle = `rgba(${C.spark},${Math.max(0, p.life) * .9})`; x.beginPath(); x.arc(cx + Math.cos(p.a) * p.d, cy + Math.sin(p.a) * p.d * .55, 1.6, 0, P); x.fill(); }
     s.parts = s.parts.filter(p => p.life > 0 && p.d > S * .6);
     x.globalCompositeOperation = 'source-over';
   }

@@ -675,7 +675,8 @@
     padding: 6.5rem var(--g) 0;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    /* Clip sideways only, so the rasengan's glow can spill past the hero's bottom edge. */
+    overflow-x: clip;
   }
 
   .hero__blob {
@@ -784,19 +785,6 @@
     filter: saturate(1.05) contrast(1.05);
   }
 
-  /* The sphere straddles the portrait's left edge, like it's held just out of frame. */
-  .hero__core-wrap {
-    position: absolute;
-    left: -200px;
-    bottom: -30px;
-    width: 360px;
-    pointer-events: none;
-  }
-
-  .hero__core {
-    pointer-events: auto;
-  }
-
   .hero__cta {
     position: absolute;
     right: -10px;
@@ -867,6 +855,40 @@
   .hero__name .w__i.em {
     color: var(--color-ink);
     -webkit-text-stroke: 0;
+  }
+
+  .hero__osho {
+    display: inline-flex;
+    align-items: baseline;
+  }
+
+  /* Both O's of Osho are rasengans (blue capital, gold lowercase). The letters stay, invisible,
+     so spacing and baseline are exact; each canvas is centred on its letter and sized to it. */
+  .hero__o {
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    color: transparent;
+    -webkit-text-stroke: 0;
+    cursor: pointer;
+  }
+
+  /* Margins centre the canvas (520:380) on the letter; GSAP owns its transform for the reveal. */
+  .hero__o-fx.fx {
+    position: absolute;
+    left: 50%;
+    top: 47%;
+    width: 2.5em;
+    max-width: none;
+    margin: -0.913em 0 0 -1.25em;
+    pointer-events: none;
+  }
+
+  /* Lowercase o: a smaller sphere, centred on the x-height. */
+  .hero__o.is-lower .hero__o-fx.fx {
+    top: 55%;
+    width: 1.9em;
+    margin: -0.694em 0 0 -0.95em;
   }
 
   /* ---------- Marquee ---------- */
@@ -1898,12 +1920,6 @@
       width: 100%;
       max-width: 420px;
       margin: 0 auto;
-    }
-
-    .hero__core-wrap {
-      left: -70px;
-      bottom: -50px;
-      width: 260px;
     }
 
     .hero__cta {
